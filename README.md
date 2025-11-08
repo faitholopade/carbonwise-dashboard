@@ -1,47 +1,73 @@
-# CarbonWise Dashboard
+# 🌿 CarbonWise AI — Measure → Optimize → Prove Sustainable AI - INTERNATIONAL HAICKATHON Submission: https://www.global-haickathon.com/
 
-A comprehensive React + TypeScript dashboard for tracking, analyzing, and optimizing AI model carbon emissions.
+**CarbonWise AI** is a  Python tracker + React dashboard that helps teams **measure** the carbon footprint of AI workloads, **optimize** with smart toggles, and **prove** reductions with side-by-side charts and a one-click PDF report. It includes a **Region Advisor** powered by **ASDI** data to suggest greener cloud regions.
 
-## 🌱 Features
+---
 
-- **Upload & Parse**: Load run data from JSONL, JSON, or CSV files
-- **Compare Runs**: Interactive charts comparing energy, CO₂, and latency across configurations
-- **SCI Calculation**: Automatic Software Carbon Intensity (Wh/request) metrics
-- **Region Advisor**: Find greener cloud regions with carbon intensity recommendations
-- **Export Reports**: Generate printable PDF reports with key insights
-- **Demo Mode**: Pre-loaded sample data for immediate exploration
+## ✨ Why this matters
+AI energy use is growing rapidly. Most teams lack *transparent, actionable* feedback to reduce emissions without sacrificing quality. CarbonWise makes sustainability a **first-class engineering metric**.
 
-## 🚀 Quick Start
+---
 
+## 📦 What’s inside
+
+### 🧠 Backend (Python)
+- `/backend/tracker.py` — `@track` decorator that logs `energy_kwh`, `co2e_kg`, `latency_ms`, `SCI`
+- `/backend/examples_baseline.py` / `/backend/examples_optimized.py` — generate demo logs
+- `/backend/sample_run_log.jsonl` — ready-made demo data
+
+### 💻 Frontend (React - Lovable)
+- **Upload**: load JSONL/CSV logs
+- **Compare**: baseline vs optimized charts (kWh, CO₂e, latency) + SCI
+- **Region Advisor**: upload or use default `public/region_factors.json` (ASDI-derived)
+- **Report**: export printable HTML → PDF
+- **Expectations**: judging expectations markdown
+
+---
+
+## 🚀 Quickstart
+
+### 1) Run the Dashboard
 ```bash
-# Install dependencies
 npm install
-
-# Run development server
 npm run dev
-
-# Build for production
-npm run build
+# open the local URL shown in the terminal
 ```
 
-Visit `http://localhost:8080` to view the dashboard.
+### 2) Use the sample data (fastest)
+In the app → **Upload** → select `backend/sample_run_log.jsonl`  
+Then open **Compare**, **Region Advisor**, and **Report**.
 
-## 📊 Data Contract
+### 3) Generate fresh logs
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 
-### Run Data Format (JSONL)
+python examples_baseline.py
+python examples_optimized.py
+# this creates backend/run_log.jsonl
+```
+Back in the app → **Upload** → select `backend/run_log.jsonl`.
 
-Each line in your `run_log.jsonl` should be a JSON object:
+---
 
+## 🧮 SCI & Data Contract
+
+**SCI** (Software Carbon Intensity):  
+`SCI (Wh/request) = (energy_kwh * 1000) / max(requests, 1)`
+
+Each line in `run_log.jsonl`:
 ```json
 {
-  "run_id": "550e8400-e29b-41d4-a716-446655440000",
+  "run_id": "uuid",
   "run_name": "baseline",
   "ts": "2025-11-08T16:25:12Z",
   "energy_kwh": 0.92,
   "co2e_kg": 0.42,
-  "latency_ms": 980,
+  "latency_ms": 980.0,
   "requests": 1,
-  "sci_wh_per_req": 920,
+  "sci_wh_per_req": 920.0,
   "meta": {
     "precision": "fp16",
     "spec_decode": false,
@@ -51,142 +77,47 @@ Each line in your `run_log.jsonl` should be a JSON object:
 }
 ```
 
-### Region Factors Format (JSON)
+---
 
-```json
-[
-  {
-    "region": "eu-north-1",
-    "gco2_per_kwh": 13,
-    "country": "Sweden"
-  },
-  {
-    "region": "us-east-1",
-    "gco2_per_kwh": 455,
-    "country": "USA (Virginia)"
-  }
-]
-```
+## 🌍 ASDI (Amazon Sustainability Data Initiative)
 
-## 📈 Using the Dashboard
-
-### 1. Upload Data
-
-Navigate to the **Upload** page and:
-- Drag & drop your `run_log.jsonl` file, or
-- Click to browse and select your file
-- Preview the parsed data in the table
-
-Supported formats: `.jsonl`, `.json`, `.csv`
-
-### 2. Compare Runs
-
-Visit the **Compare** page to:
-- View bar charts of energy consumption, CO₂ emissions, and latency
-- See percentage improvements between baseline and optimized runs
-- Compare SCI scores across configurations
-
-### 3. Get Region Recommendations
-
-On the **Region Advisor** page:
-- Select your current cloud region
-- View top 3 greener alternatives with estimated CO₂ reduction
-- Sort all regions by carbon intensity
-
-### 4. Export Reports
-
-Generate a comprehensive PDF report:
-1. Navigate to the **Report** page
-2. Review the printable summary with charts and recommendations
-3. Click **Export PDF** to download
-
-## 🔧 Technical Stack
-
-- **Framework**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Charts**: Recharts
-- **State Management**: Zustand (with localStorage persistence)
-- **PDF Export**: html2pdf.js
-- **UI Components**: shadcn/ui + Radix UI
-
-## 🏗️ Architecture
-
-```mermaid
-graph TD
-    A[User Upload] --> B[Data Store - Zustand]
-    B --> C[localStorage Persistence]
-    B --> D[Compare Page]
-    B --> E[Region Advisor]
-    B --> F[Report Generator]
-    D --> G[Recharts Visualization]
-    E --> H[Region Recommendations]
-    F --> I[PDF Export - html2pdf.js]
-```
-
-## 📋 Project Structure
-
-```
-src/
-├── components/
-│   ├── Navigation.tsx       # Top navigation bar
-│   └── ui/                  # shadcn UI components
-├── pages/
-│   ├── Upload.tsx           # File upload & data preview
-│   ├── Compare.tsx          # Charts & metrics comparison
-│   ├── RegionAdvisor.tsx    # Carbon intensity advisor
-│   ├── Report.tsx           # Printable report & PDF export
-│   └── Expectations.tsx     # Project documentation
-├── store/
-│   └── useDataStore.ts      # Zustand state management
-└── App.tsx                  # Main app & routing
-
-public/
-└── region_factors.json      # Default regional carbon data
-```
-
-## 🎨 Design System
-
-The dashboard uses a green-focused color palette representing sustainability:
-
-- **Primary**: Emerald green (#10b981)
-- **Accent**: Teal (#14b8a6)
-- **Background**: Clean white with subtle gray tones
-- **Charts**: Green-to-blue gradient scale
-
-All colors defined as HSL values in `src/index.css` for consistent theming.
-
-## 🧪 Demo Mode
-
-If no data is uploaded, the dashboard displays demo data:
-- **Baseline**: 0.92 kWh, 0.42 kg CO₂e, 980ms latency
-- **Optimized**: 0.58 kWh, 0.27 kg CO₂e, 710ms latency (37% improvement)
-
-## 📝 Rubric Mapping
-
-| Criterion | Implementation |
-|-----------|---------------|
-| Carbon Measurement | CodeCarbon SDK integration for energy/CO₂ tracking |
-| Optimization | 4-bit/8-bit quant, speculative decoding, token caps |
-| SCI Metric | Automated calculation: (Wh per request) / requests |
-| Region Recommendations | Data-driven advisor with % improvement estimates |
-| Visualization | Interactive Recharts + exportable PDF reports |
-
-## 🤝 Contributing
-
-This is a demonstration project for the CarbonWise AI challenge. For issues or suggestions, please refer to the project documentation.
-
-## 📄 License
-
-MIT License - see LICENSE file for details
-
-## 🔗 Resources
-
-- [Software Carbon Intensity Standard](https://sci.greensoftware.foundation/)
-- [CodeCarbon Documentation](https://codecarbon.io/)
-- [AWS Sustainability Data Initiative](https://sustainability.aboutamazon.com/products-services/the-cloud)
-- [Green Software Foundation](https://greensoftware.foundation/)
+The **Region Advisor** uses `public/region_factors.json` (ASDI-derived) to sort regions by **gCO₂/kWh** and show greener alternatives.  
+You can upload your own dataset for your cloud/provider.
 
 ---
 
-Built with ❤️ for sustainable AI development
+## 🧪 Demo checklist
+
+1. **Generate** baseline & optimized logs (or use sample).  
+2. **Upload** in the dashboard.  
+3. **Compare** → show % drop in kWh/CO₂e and SCI improvement.  
+4. **Region Advisor** → select current region, view top 3 greener options.  
+5. **Report** → click **Export PDF** → attach to submission.
+
+---
+
+## 🧱 Architecture
+
+```mermaid
+flowchart LR
+  A[Your AI code] -->|@track| B[Python tracker]
+  B --> C[CodeCarbon meter]
+  C --> D[run_log.jsonl]
+  D --> E[React dashboard]
+  E --> F[Compare view + SCI + Report]
+  E --> G[Region Advisor (ASDI region_factors.json)]
+```
+
+---
+
+## 🧭 Expectations (for kickoff)
+
+- **Problem**: Teams lack actionable, standardized feedback to reduce AI workload emissions.  
+- **Solution**: SDK + dashboard that measures energy/CO₂e (CodeCarbon), computes SCI, and recommends optimizations with an ASDI-powered Region Advisor.  
+- **Scope**: Python tracker; React dashboard with Compare/SCI/Advisor/Report; sample data; public repo.  
+- **Success**: ≥30% kWh/CO₂e reduction on demo; <10 lines to instrument; 90-sec video + PDF report.
+
+---
+
+## 📜 License
+MIT
