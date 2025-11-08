@@ -10,11 +10,11 @@ def cpu_burn(seconds: float):
         x = (x + 1.234567) * 1.000001
         x = math.sin(x) * math.cos(x)
 
-@track(run_name="baseline", requests=10,  # we’ll do 10 inferences in one run
+@track(run_name="baseline", requests=30,  # we’ll do 10 inferences in one run
        meta={"precision":"fp16","spec_decode":False,"quant":None,"region":"eu-west-1"},
        country_iso="IE", measure_secs=0.5)
 def batch_inference():
-    for _ in range(10):
+    for _ in range(30):
         cpu_burn(1.0)   # ~1.0s of CPU work per request
 
 if __name__ == "__main__":
