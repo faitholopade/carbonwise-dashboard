@@ -96,28 +96,9 @@ You can upload your own dataset for your cloud/provider.
 
 ---
 
-## 🧱 Architecture
-
-```mermaid
-flowchart LR
-  A[Your AI code] -->|@track| B[Python tracker]
-  B --> C[CodeCarbon meter]
-  C --> D[run_log.jsonl]
-  D --> E[React dashboard]
-  E --> F[Compare view + SCI + Report]
-  E --> G[Region Advisor (ASDI region_factors.json)]
-```
-
----
-
 ## 🧭 Expectations (for kickoff)
 
 - **Problem**: Teams lack actionable, standardized feedback to reduce AI workload emissions.  
 - **Solution**: SDK + dashboard that measures energy/CO₂e (CodeCarbon), computes SCI, and recommends optimizations with an ASDI-powered Region Advisor.  
 - **Scope**: Python tracker; React dashboard with Compare/SCI/Advisor/Report; sample data; public repo.  
 - **Success**: ≥30% kWh/CO₂e reduction on demo; <10 lines to instrument; 90-sec video + PDF report.
-
----
-
-## 📜 License
-MIT
