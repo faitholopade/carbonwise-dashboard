@@ -1,104 +1,194 @@
-# 🌿 CarbonWise AI — Measure → Optimize → Prove Sustainable AI - INTERNATIONAL HAICKATHON Submission: https://www.global-haickathon.com/
-
-**CarbonWise AI** is a  Python tracker + React dashboard that helps teams **measure** the carbon footprint of AI workloads, **optimize** with smart toggles, and **prove** reductions with side-by-side charts and a one-click PDF report. It includes a **Region Advisor** powered by **ASDI** data to suggest greener cloud regions.
-
----
-
-## ✨ Why this matters
-AI energy use is growing rapidly. Most teams lack *transparent, actionable* feedback to reduce emissions without sacrificing quality. CarbonWise makes sustainability a **first-class engineering metric**.
+# 🌿 CarbonWise AI — Measure → Optimize → Prove Sustainable AI  
+### International hAIckathon 2025 Submission - https://www.global-haickathon.com/
+**Theme:** Reduced Inequalities & Climate Action  
 
 ---
 
-## 📦 What’s inside
+## 🧭 Overview
 
-### 🧠 Backend (Python)
-- `/backend/tracker.py` — `@track` decorator that logs `energy_kwh`, `co2e_kg`, `latency_ms`, `SCI`
-- `/backend/examples_baseline.py` / `/backend/examples_optimized.py` — generate demo logs
-- `/backend/sample_run_log.jsonl` — ready-made demo data
+**CarbonWise AI** is my hackathon project — a lightweight system designed to make **AI sustainability measurable, actionable, and transparent**.
 
-### 💻 Frontend (React - Lovable)
-- **Upload**: load JSONL/CSV logs
-- **Compare**: baseline vs optimized charts (kWh, CO₂e, latency) + SCI
-- **Region Advisor**: upload or use default `public/region_factors.json` (ASDI-derived)
-- **Report**: export printable HTML → PDF
-- **Expectations**: judging expectations markdown
+It combines a simple **Python SDK** that tracks the energy and carbon footprint of AI workloads with a **React dashboard** that helps visualize improvements, identify greener compute regions, and export tangible evidence of impact.
+
+The idea is simple:  
+> *Measure what matters — then prove you’ve made it better.*
 
 ---
 
-## 🚀 Quickstart
+## 💡 Why I Built This
 
-### 1) Run the Dashboard
+AI is powerful but increasingly energy‑hungry.  
+Most teams have no idea how much carbon their models produce or how to reduce it.  
+I wanted to build a tool that makes sustainability tracking as natural as tracking latency or accuracy — something that’s open, easy, and data‑driven.
+
+CarbonWise turns carbon and energy into engineering metrics that anyone can measure and improve, whether you’re a student, a researcher, or a large‑scale ML team.
+
+---
+
+## 🧩 What CarbonWise Does
+
+1. **Measure:**  
+   Use a Python decorator (`@track`) to automatically log runtime, energy (kWh), and CO₂e emissions from any AI model run.  
+
+2. **Optimize:**  
+   Run experiments (e.g., quantization, batching, speculative decoding) and instantly see the effect on efficiency and latency.  
+
+3. **Prove:**  
+   Visualize before/after runs, calculate **Software Carbon Intensity (SCI)**, and export a clean **PDF report** — something you can actually show to stakeholders or include in a paper.
+
+4. **Advise:**  
+   The built‑in **Region Advisor** uses open **ASDI** data (Amazon Sustainability Data Initiative) to recommend cloud regions with lower grid carbon intensity.  
+
+5. **Extend:**  
+   For the hackathon, I explored integrations with **Hathora** (for real‑time cloud inference) and **ElevenLabs** (to generate spoken sustainability summaries).
+
+---
+
+## ⚙️ Tech Overview
+
+| Layer | Tools & Frameworks |
+|-------|--------------------|
+| Measurement | Python 3 · CodeCarbon |
+| Dashboard | React + TypeScript (Lovable · Vite · Tailwind · Recharts) |
+| Data Source | ASDI (Amazon Sustainability Data Initiative) |
+| Cloud Integration | Hathora |
+| Voice Narration | ElevenLabs API |
+| Reporting | HTML‑to‑PDF (html2pdf.js · ReportLab) |
+| Hosting | GitHub Pages · Vercel |
+
+---
+
+## 📂 Project Structure
+
+### Backend (Python)
+| File | Description |
+|------|--------------|
+| `tracker.py` | Core SDK — decorator that logs energy_kwh, co2e_kg, latency_ms, and SCI |
+| `examples_baseline.py` / `examples_optimized.py` | Demo scripts that simulate two AI runs |
+| `examples_hathora_client.py` | Calls a model endpoint on Hathora for cloud inference |
+| `examples_eleven_tts.py` | Generates an ElevenLabs voice summary (`carbonwise_summary.mp3`) |
+| `cw_report.py` | Creates a Markdown + PDF summary |
+| `region_advisor.py` | Suggests greener regions using ASDI grid intensity data |
+| `requirements.txt` | Backend dependencies |
+| `run_log.jsonl` | Output log containing run metrics |
+
+### Frontend (React)
+- **Upload:** Import your run logs (`run_log.jsonl` or `.csv`)  
+- **Compare:** View energy, CO₂e, and latency improvements  
+- **Region Advisor:** Greener region recommendations (ASDI)  
+- **Report:** Generate and download a shareable PDF summary  
+- **Expectations:** Markdown page used during hackathon judging  
+
+---
+
+## 🚀 Getting Started
+
+### Run the Dashboard
 ```bash
 npm install
 npm run dev
-# open the local URL shown in the terminal
+# open the local URL in your browser
 ```
 
-### 2) Use the sample data (fastest)
-In the app → **Upload** → select `backend/sample_run_log.jsonl`  
-Then open **Compare**, **Region Advisor**, and **Report**.
+### Use the Sample Data
+1. Go to **Upload** → select `backend/sample_run_log.jsonl`.  
+2. Explore **Compare**, **Region Advisor**, and **Report** tabs.  
 
-### 3) Generate fresh logs
+### Generate New Logs
 ```bash
 cd backend
-python -m venv .venv && source .venv/bin/activate
+python -m venv .venv 
+.venv\Scripts\activate
 pip install -r requirements.txt
 
 python examples_baseline.py
 python examples_optimized.py
-# this creates backend/run_log.jsonl
 ```
-Back in the app → **Upload** → select `backend/run_log.jsonl`.
+You’ll get a new `run_log.jsonl`. Upload it again in the dashboard to refresh the charts.
 
 ---
 
-## 🧮 SCI & Data Contract
+## ☁️ Optional Add‑Ons
 
-**SCI** (Software Carbon Intensity):  
-`SCI (Wh/request) = (energy_kwh * 1000) / max(requests, 1)`
+### Hathora Cloud Integration
+For teams deploying models remotely, CarbonWise can track API‑based inference the same way as local runs.
 
-Each line in `run_log.jsonl`:
+```bash
+python backend/examples_hathora_client.py
+```
+This logs a third “cloud” run alongside your baseline and optimized ones.
+
+### ElevenLabs Voice Narration
+CarbonWise can also narrate your sustainability results — making them more engaging and accessible.
+
+```bash
+python backend/examples_eleven_tts.py
+```
+Generates a `carbonwise_summary.mp3` you can play directly in your presentation.
+
+---
+
+## 🧮 The SCI Metric
+
+CarbonWise uses the **Software Carbon Intensity (SCI)** formula:
+```
+SCI (Wh / request) = (energy_kwh * 1000) / max(requests, 1)
+```
+
+Each log entry looks like:
 ```json
 {
   "run_id": "uuid",
-  "run_name": "baseline",
-  "ts": "2025-11-08T16:25:12Z",
-  "energy_kwh": 0.92,
-  "co2e_kg": 0.42,
-  "latency_ms": 980.0,
-  "requests": 1,
-  "sci_wh_per_req": 920.0,
-  "meta": {
-    "precision": "fp16",
-    "spec_decode": false,
-    "quant": null,
-    "region": "eu-west-1"
-  }
+  "run_name": "optimized",
+  "energy_kwh": 0.58,
+  "co2e_kg": 0.27,
+  "latency_ms": 710,
+  "sci_wh_per_req": 580.0,
+  "meta": {"precision":"int4","region":"europe-west9"}
 }
 ```
 
 ---
 
-## 🌍 ASDI (Amazon Sustainability Data Initiative)
+## 🌍 Open Data (ASDI)
 
-The **Region Advisor** uses `public/region_factors.json` (ASDI-derived) to sort regions by **gCO₂/kWh** and show greener alternatives.  
-You can upload your own dataset for your cloud/provider.
-
----
-
-## 🧪 Demo checklist
-
-1. **Generate** baseline & optimized logs (or use sample).  
-2. **Upload** in the dashboard.  
-3. **Compare** → show % drop in kWh/CO₂e and SCI improvement.  
-4. **Region Advisor** → select current region, view top 3 greener options.  
-5. **Report** → click **Export PDF** → attach to submission.
+The Region Advisor uses **ASDI grid‑intensity data** (gCO₂/kWh) to recommend where your workloads should run for the lowest environmental impact.  
+You can also upload your own data file if you have provider‑specific emission metrics.
 
 ---
 
-## 🧭 Expectations (for kickoff)
+## 🧾 Typical Demo Flow
 
-- **Problem**: Teams lack actionable, standardized feedback to reduce AI workload emissions.  
-- **Solution**: SDK + dashboard that measures energy/CO₂e (CodeCarbon), computes SCI, and recommends optimizations with an ASDI-powered Region Advisor.  
-- **Scope**: Python tracker; React dashboard with Compare/SCI/Advisor/Report; sample data; public repo.  
-- **Success**: ≥30% kWh/CO₂e reduction on demo; <10 lines to instrument; 90-sec video + PDF report.
+1. Generate baseline and optimized runs.  
+2. (Optional) Add a cloud or voice run.  
+3. Upload your `run_log.jsonl` to the dashboard.  
+4. Compare results visually.  
+5. Review ASDI‑based region suggestions.  
+6. Export the **PDF** — your “proof of improvement.”  
+
+---
+
+## 🧱 Architecture Diagram
+
+```mermaid
+flowchart TD
+  A[User AI Code] --> B[CarbonWise SDK]
+  B --> C[run_log.jsonl]
+  C --> D[Dashboard]
+  D --> E[Compare View]
+  D --> F[Region Advisor]
+  D --> G[Report Export]
+  F --> H[ASDI Data]
+  G --> I[PDF Report]
+  A --> J[Hathora Cloud Models]
+  J --> B
+  G --> K[ElevenLabs Voice Summary]
+```
+
+---
+
+## 🏁 Closing Thoughts
+
+CarbonWise AI isn’t about huge infrastructure — it’s about **visibility**.  
+In one weekend, I wanted to show that sustainability tracking for AI can be simple, open, and measurable.  
+If this project helps even one team make a more efficient design choice, it’s done its job.
