@@ -10,11 +10,6 @@ AI is powerful — but behind every model training or inference is energy consum
 **CarbonWise AI** is my attempt to make sustainability in AI *visible, measurable, and actionable*.  
 In this blog, I’ll walk you through the full system: from the problem that inspired it to the code, data, and tools that bring it to life.
 
-<video src="https://drive.google.com/uc?export=download&id=YOUR_INTRO_VIDEO_ID" width="100%" controls poster="thumbnails/intro.jpg">
-Your browser does not support the video tag.
-</video>
-
----
 
 ## 💡 The Problem & The Solution
 
@@ -26,10 +21,6 @@ That gap means we can’t optimize what we can’t measure.
 - a **React dashboard** that visualizes before/after efficiency and generates PDF reports;  
 - a **Region Advisor** using **ASDI (Amazon Sustainability Data Initiative)** data to recommend greener compute regions;  
 - and optional integrations with **Hathora** (for cloud inference) and **ElevenLabs** (for voice summaries).
-
-<video src="https://drive.google.com/uc?export=download&id=YOUR_PROBLEM_SOLUTION_VIDEO_ID" width="100%" controls poster="thumbnails/problem_solution.jpg">
-Your browser does not support the video tag.
-</video>
 
 ---
 
@@ -43,9 +34,7 @@ Below, you’ll see both scripts running:
 
 As they run, **CodeCarbon** captures CPU and memory energy use, generating a log file: `run_log.jsonl`.
 
-<video src="https://drive.google.com/uc?export=download&id=YOUR_BASELINE_OPTIMIZED_VIDEO_ID" width="100%" controls poster="thumbnails/baseline_optimized.jpg">
-Your browser does not support the video tag.
-</video>
+<video src="[https://drive.google.com/uc?export=download&id=YOUR_BASELINE_OPTIMIZED_VIDEO_ID](https://drive.google.com/file/d/1fHRU9pzuHH43aLSEyKa67LJpdCOeAKch/view?usp=sharing)" width="100%"></video>
 
 ---
 
