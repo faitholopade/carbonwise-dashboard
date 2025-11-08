@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useDataStore } from "@/store/useDataStore";
 import { toast } from "sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { getEnergyDisplay, getCO2Display } from "@/utils/units";
 
 export default function Upload() {
   const { runs, setRuns, clearData } = useDataStore();
@@ -154,17 +155,21 @@ export default function Upload() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {runs.slice(0, 10).map((run, idx) => (
-                      <TableRow key={run.run_id || idx}>
-                        <TableCell className="font-medium">{run.run_name}</TableCell>
-                        <TableCell>{run.energy_kwh.toFixed(3)}</TableCell>
-                        <TableCell>{run.co2e_kg.toFixed(3)}</TableCell>
-                        <TableCell>{run.latency_ms.toFixed(0)}</TableCell>
-                        <TableCell>{run.requests}</TableCell>
-                        <TableCell>{run.sci_wh_per_req.toFixed(0)}</TableCell>
-                        <TableCell>{run.meta?.region || 'N/A'}</TableCell>
-                      </TableRow>
-                    ))}
+                    {runs.slice(0, 10).map((run, idx) => {
+                      const e = getEnergyDisplay(run);
+                      const c = getCO2Display(run);
+                      return (
+                        <TableRow key={run.run_id || idx}>
+                          <TableCell className="font-medium">{run.run_name}</TableCell>
+                          <TableCell>{e.value.toFixed(3)} {e.unit}</TableCell>
+                          <TableCell>{c.value.toFixed(3)} {c.unit}</TableCell>
+                          <TableCell>{run.latency_ms?.toFixed(0) || 0}</TableCell>
+                          <TableCell>{run.requests}</TableCell>
+                          <TableCell>{run.sci_wh_per_req?.toFixed(3) || 0}</TableCell>
+                          <TableCell>{run.meta?.region || 'N/A'}</TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
                 {runs.length > 10 && (

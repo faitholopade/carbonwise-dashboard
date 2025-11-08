@@ -2,48 +2,68 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useDataStore } from "@/store/useDataStore";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { AlertCircle } from "lucide-react";
+import { energyAsKWh, co2AsKg, pct } from "@/utils/units";
 
 export default function Compare() {
   const { runs } = useDataStore();
 
-  // Group runs by run_name and calculate averages
+  // Group runs by run_name and calculate averages using normalized units
   const groupedData = runs.reduce((acc, run) => {
     if (!acc[run.run_name]) {
       acc[run.run_name] = {
         name: run.run_name,
-        totalEnergy: 0,
-        totalCo2: 0,
+        totalEnergyKWh: 0,
+        totalCo2Kg: 0,
         totalLatency: 0,
         totalSci: 0,
         count: 0,
       };
     }
-    acc[run.run_name].totalEnergy += run.energy_kwh;
-    acc[run.run_name].totalCo2 += run.co2e_kg;
-    acc[run.run_name].totalLatency += run.latency_ms;
-    acc[run.run_name].totalSci += run.sci_wh_per_req;
+    acc[run.run_name].totalEnergyKWh += energyAsKWh(run);
+    acc[run.run_name].totalCo2Kg += co2AsKg(run);
+    acc[run.run_name].totalLatency += run.latency_ms || 0;
+    acc[run.run_name].totalSci += run.sci_wh_per_req || 0;
     acc[run.run_name].count += 1;
     return acc;
   }, {} as Record<string, any>);
 
-  const chartData = Object.values(groupedData).map((group: any) => ({
+  // Calculate means
+  const mean = (total: number, count: number) => count > 0 ? total / count : 0;
+  
+  const processedGroups = Object.values(groupedData).map((group: any) => ({
     name: group.name,
-    'Energy (kWh)': (group.totalEnergy / group.count).toFixed(3),
-    'CO₂e (kg)': (group.totalCo2 / group.count).toFixed(3),
-    'Latency (ms)': (group.totalLatency / group.count).toFixed(0),
-    avgSci: (group.totalSci / group.count).toFixed(0),
+    avgEnergyKWh: mean(group.totalEnergyKWh, group.count),
+    avgCo2Kg: mean(group.totalCo2Kg, group.count),
+    avgLatency: mean(group.totalLatency, group.count),
+    avgSci: mean(group.totalSci, group.count),
   }));
 
-  // Calculate improvement percentages if we have baseline and optimized
-  const baseline = chartData.find(d => d.name.toLowerCase().includes('baseline'));
-  const optimized = chartData.find(d => d.name.toLowerCase().includes('optimized'));
+  // Find baseline and optimized runs
+  const baseline = processedGroups.find(d => d.name.toLowerCase().includes('baseline'));
+  const optimized = processedGroups.find(d => d.name.toLowerCase().includes('optimized'));
   
+  // Determine display units based on magnitude
+  const maxEnergyKWh = Math.max(...processedGroups.map(g => g.avgEnergyKWh));
+  const maxCo2Kg = Math.max(...processedGroups.map(g => g.avgCo2Kg));
+  const energyUnit = maxEnergyKWh < 0.01 ? "Wh" : "kWh";
+  const co2Unit = maxCo2Kg < 0.01 ? "g" : "kg";
+
+  // Build chart data with appropriate units
+  const chartData = processedGroups.map(group => ({
+    name: group.name,
+    energy: energyUnit === "Wh" ? group.avgEnergyKWh * 1000 : group.avgEnergyKWh,
+    co2: co2Unit === "g" ? group.avgCo2Kg * 1000 : group.avgCo2Kg,
+    latency: group.avgLatency,
+    avgSci: group.avgSci,
+  }));
+
+  // Calculate improvement percentages
   let improvements = null;
   if (baseline && optimized) {
     improvements = {
-      energy: ((1 - Number(optimized['Energy (kWh)']) / Number(baseline['Energy (kWh)'])) * 100).toFixed(1),
-      co2: ((1 - Number(optimized['CO₂e (kg)']) / Number(baseline['CO₂e (kg)'])) * 100).toFixed(1),
-      latency: ((1 - Number(optimized['Latency (ms)']) / Number(baseline['Latency (ms)'])) * 100).toFixed(1),
+      energy: pct(baseline.avgEnergyKWh, optimized.avgEnergyKWh).toFixed(1),
+      co2: pct(baseline.avgCo2Kg, optimized.avgCo2Kg).toFixed(1),
+      latency: pct(baseline.avgLatency, optimized.avgLatency).toFixed(1),
     };
   }
 
@@ -105,7 +125,7 @@ export default function Compare() {
 
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
-            <CardTitle>Energy Consumption (kWh)</CardTitle>
+            <CardTitle>Energy Consumption ({energyUnit})</CardTitle>
             <CardDescription>Average energy per run configuration</CardDescription>
           </CardHeader>
           <CardContent>
@@ -113,7 +133,7 @@ export default function Compare() {
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="name" className="text-xs" />
-                <YAxis className="text-xs" />
+                <YAxis className="text-xs" label={{ value: `Energy (${energyUnit})`, angle: -90, position: "insideLeft" }} />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--card))', 
@@ -122,7 +142,7 @@ export default function Compare() {
                   }} 
                 />
                 <Legend />
-                <Bar dataKey="Energy (kWh)" fill="hsl(var(--chart-1))" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="energy" name={`Energy (${energyUnit})`} fill="hsl(var(--chart-1))" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -130,7 +150,7 @@ export default function Compare() {
 
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
-            <CardTitle>CO₂ Emissions (kg)</CardTitle>
+            <CardTitle>CO₂ Emissions ({co2Unit})</CardTitle>
             <CardDescription>Average carbon emissions per run configuration</CardDescription>
           </CardHeader>
           <CardContent>
@@ -138,7 +158,7 @@ export default function Compare() {
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="name" className="text-xs" />
-                <YAxis className="text-xs" />
+                <YAxis className="text-xs" label={{ value: `CO₂ (${co2Unit})`, angle: -90, position: "insideLeft" }} />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--card))', 
@@ -147,7 +167,7 @@ export default function Compare() {
                   }} 
                 />
                 <Legend />
-                <Bar dataKey="CO₂e (kg)" fill="hsl(var(--chart-2))" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="co2" name={`CO₂e (${co2Unit})`} fill="hsl(var(--chart-2))" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -163,7 +183,7 @@ export default function Compare() {
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="name" className="text-xs" />
-                <YAxis className="text-xs" />
+                <YAxis className="text-xs" label={{ value: "Latency (ms)", angle: -90, position: "insideLeft" }} />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--card))', 
@@ -172,7 +192,7 @@ export default function Compare() {
                   }} 
                 />
                 <Legend />
-                <Bar dataKey="Latency (ms)" fill="hsl(var(--chart-3))" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="latency" name="Latency (ms)" fill="hsl(var(--chart-3))" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -185,20 +205,20 @@ export default function Compare() {
               Software Carbon Intensity - lower is better
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {chartData.map((data) => (
-                <Card key={data.name} className="border-2">
-                  <CardHeader>
-                    <CardTitle className="text-lg">{data.name}</CardTitle>
-                    <CardDescription className="text-3xl font-bold text-primary">
-                      {data.avgSci} Wh/req
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {chartData.map((data) => (
+                  <Card key={data.name} className="border-2">
+                    <CardHeader>
+                      <CardTitle className="text-lg">{data.name}</CardTitle>
+                      <CardDescription className="text-3xl font-bold text-primary">
+                        {data.avgSci.toFixed(3)} Wh/req
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
         </Card>
       </div>
     </div>
