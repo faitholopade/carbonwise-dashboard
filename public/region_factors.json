@@ -1,0 +1,12 @@
+[
+  { "region": "eu-north-1", "gco2_per_kwh": 13, "country": "Sweden" },
+  { "region": "ca-central-1", "gco2_per_kwh": 28, "country": "Canada" },
+  { "region": "eu-west-1", "gco2_per_kwh": 345, "country": "Ireland" },
+  { "region": "us-west-2", "gco2_per_kwh": 415, "country": "USA (Oregon)" },
+  { "region": "us-east-1", "gco2_per_kwh": 455, "country": "USA (Virginia)" },
+  { "region": "ap-southeast-1", "gco2_per_kwh": 510, "country": "Singapore" },
+  { "region": "eu-central-1", "gco2_per_kwh": 338, "country": "Germany" },
+  { "region": "ap-northeast-1", "gco2_per_kwh": 502, "country": "Japan" },
+  { "region": "us-west-1", "gco2_per_kwh": 332, "country": "USA (California)" },
+  { "region": "ap-south-1", "gco2_per_kwh": 708, "country": "India" }
+]
