@@ -1,5 +1,10 @@
 # 🌿 CarbonWise AI — Measure → Optimize → Prove Sustainable AI  
 ### International hAIckathon 2025 Submission - https://www.global-haickathon.com/
+https://devpost.com/software/carbonwise-ai-measure-optimize-prove-sustainable-ai?ref_content=user-portfolio&ref_feature=in_progress
+
+CarbonWise AI was selected as the winner of the “Best Project Built with ElevenLabs” prize at the International hAIckathon 2025.  
+The project also placed 6th overall out of more than 200 teams chosen to compete globally.
+
 **Theme:** Reduced Inequalities & Climate Action  
 
 ---
